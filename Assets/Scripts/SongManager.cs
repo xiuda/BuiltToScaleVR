@@ -9,7 +9,7 @@ public class SongManager : MonoBehaviour
     public static SongManager Instance;
 
     public AudioSource audioSource;
-
+    public GameManager gameManager;
     public float songDelayInSeconds;
     public double timingWindow; // timing window for the player, in seconds.
     public int inputDelay; //in milliseconds
@@ -42,13 +42,13 @@ public class SongManager : MonoBehaviour
         var arr = new Melanchall.DryWetMidi.Interaction.Note[notes.Count];
         notes.CopyTo(arr, 0);
         
-        //need more
+        gameManager.SetTimeStamps(arr);
         Invoke(nameof(StartSong), songDelayInSeconds);
     }
 
     public void StartSong()
     {
-        
+        audioSource.Play();
     }
 
     public static double GetAudioSourceTime()
