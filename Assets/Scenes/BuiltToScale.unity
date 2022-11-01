@@ -130,9 +130,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4025616716409890505, guid: d215bc0f0a59d9a4789aea4d62e69b81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4527517983316903467, guid: d215bc0f0a59d9a4789aea4d62e69b81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6289670792682828209, guid: d215bc0f0a59d9a4789aea4d62e69b81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7493488222679116942, guid: d215bc0f0a59d9a4789aea4d62e69b81, type: 3}
       propertyPath: m_Name
       value: ElevatorWithRod Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7493488222679116942, guid: d215bc0f0a59d9a4789aea4d62e69b81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7833421640266217012, guid: d215bc0f0a59d9a4789aea4d62e69b81, type: 3}
       propertyPath: m_RootOrder
@@ -665,7 +681,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4d6a1ca519b6789419c00178b5d2b983, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1457549886834139525, guid: 4d6a1ca519b6789419c00178b5d2b983, type: 3}
       propertyPath: m_Materials.Array.data[0]
