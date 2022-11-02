@@ -37,16 +37,16 @@ public class Note : MonoBehaviour
     //     }
     // }
 
-    const int blockFramesPerSecond = 24;
-    const int blockHitFrame = 39;
-    const int blockTotalFrames = 80;
+    const int animFPS = 24;
+    const int hitFrame = 39;
+    const int animTotalFrames = 80;
 
     // Set the timing of the animation.
     public void SetTiming(float spawnTime, float hitTime, float bpm)
     {
         length = hitTime - spawnTime;
-        float secondsPerFrame = 1f / blockFramesPerSecond;
-        float secondsToHitFrame = secondsPerFrame * blockHitFrame;
+        float secondsPerFrame = 1f / animFPS;
+        float secondsToHitFrame = secondsPerFrame * hitFrame;
         float speedMult = secondsToHitFrame / length;
 
 

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.MusicTheory;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
-    
+    [Header("Input")] public InputActionReference trigger;
+
     // Variable references from https://github.com/megaminerjenny/HeavenStudio/blob/master/Assets/Scripts/Games/BuiltToScaleDS/BuiltToScaleDS.cs
     // For now, since the player is the shooter in VR. Some animators and variables may not be used.
     [Header("References")]
@@ -49,8 +51,30 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        trigger.action.started += OnActivate;
     }
+
+    public void OnActivate(InputAction.CallbackContext context)
+    {
+        Debug.Log("Pressed button");
+        double timeStamp = timeStamps[inputIndex];
+        double timingWindow = SongManager.Instance.timingWindow;
+        double audioTime = SongManager.GetAudioSourceTime() - (SongManager.Instance.inputDelay / 1000.0);
+        
+        Shoot();
+        if (Math.Abs(audioTime - timeStamp) < timingWindow)
+        {
+            Hit();
+            inputIndex++;
+        }
+        else if (Math.Abs(audioTime - timeStamp) < timingWindow + 0.5)
+        {
+            SlightMiss(); // might need to play around with an else-if for if they're close to touching but haven't yet.
+            inputIndex++;
+            print($"Hit inaccurate on {inputIndex} note with {Math.Abs(audioTime - timeStamp)} delay");
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -69,26 +93,8 @@ public class GameManager : MonoBehaviour
             double timeStamp = timeStamps[inputIndex];
             double timingWindow = SongManager.Instance.timingWindow;
             double audioTime = SongManager.GetAudioSourceTime() - (SongManager.Instance.inputDelay / 1000.0);
-
-            // @TODO Get VR Input
-            // Also TODO, we don't want to mess up the input index if the player slaps the button a lot?
-            // Might need to confirm this isn't buggy.
-            if (Input.GetMouseButtonDown(0))
-            {
-                Shoot();
-                if (Math.Abs(audioTime - timeStamp) < timingWindow)
-                {
-                    Hit();
-                    inputIndex++;
-                }
-                else if (Math.Abs(audioTime - timeStamp) < timingWindow + 0.5)
-                {
-                    SlightMiss(); // might need to play around with an else-if for if they're close to touching but haven't yet.
-                    inputIndex++;
-                    print($"Hit inaccurate on {inputIndex} note with {Math.Abs(audioTime - timeStamp)} delay");
-                }
-            }
-
+            
+            
             if (timeStamp + timingWindow <= audioTime)
             {
                 Miss();
