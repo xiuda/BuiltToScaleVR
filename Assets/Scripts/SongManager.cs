@@ -11,6 +11,7 @@ public class SongManager : MonoBehaviour
     public AudioSource audioSource;
     public GameManager gameManager;
     public float songDelayInSeconds;
+    public float bpm = 140;
     public double timingWindow; // timing window for the player, in seconds.
     public int inputDelay; //in milliseconds
 

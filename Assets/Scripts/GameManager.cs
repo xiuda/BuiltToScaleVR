@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     
     // Variable references from https://github.com/megaminerjenny/HeavenStudio/blob/master/Assets/Scripts/Games/BuiltToScaleDS/BuiltToScaleDS.cs
     // For now, since the player is the shooter in VR. Some animators and variables may not be used.
-    public enum BTSObject { HitPieces, MissPieces, FlyingRod }
     [Header("References")]
     public SkinnedMeshRenderer environmentRenderer;
     public GameObject flyingRodBase;
@@ -18,9 +17,6 @@ public class GameManager : MonoBehaviour
     public GameObject hitPartsBase;
     public GameObject missPartsBase;
     public GameObject testBase;
-    public Transform partsHolder;
-    public Transform blocksHolder;
-    public Animator shooterAnim;
     public Animator elevatorAnim;
 
     [Header("Properties")]
@@ -33,7 +29,7 @@ public class GameManager : MonoBehaviour
     public NoteName blockSpawnNote;
     public NoteName hitNote;
     // Input would go here. Will probably get it from input action manager?
-    private List<Note> notes = new List<Note>();
+    [SerializeField] private List<Note> notes = new List<Note>();
     public List<double> timeStamps = new List<double>();
     public List<double> spawnTimeStamps = new List<double>();
 
@@ -63,9 +59,7 @@ public class GameManager : MonoBehaviour
         {
             if (SongManager.GetAudioSourceTime() >= spawnTimeStamps[_spawnIndex])
             {
-                var note = Instantiate(testBase, transform);
-                notes.Add(note.GetComponent<Note>());
-                note.GetComponent<Note>().assignedTime = (float)timeStamps[_spawnIndex];
+                SpawnNote();
                 _spawnIndex++;
             }
         }
@@ -81,14 +75,16 @@ public class GameManager : MonoBehaviour
             // Might need to confirm this isn't buggy.
             if (Input.GetMouseButtonDown(0))
             {
+                Shoot();
                 if (Math.Abs(audioTime - timeStamp) < timingWindow)
                 {
                     Hit();
                     inputIndex++;
                 }
-                else
+                else if (Math.Abs(audioTime - timeStamp) < timingWindow + 0.5)
                 {
                     SlightMiss(); // might need to play around with an else-if for if they're close to touching but haven't yet.
+                    inputIndex++;
                     print($"Hit inaccurate on {inputIndex} note with {Math.Abs(audioTime - timeStamp)} delay");
                 }
             }
@@ -103,6 +99,25 @@ public class GameManager : MonoBehaviour
         UpdateConveyorBelt();
     }
 
+    private void SpawnNote()
+    {
+        var spawn = Instantiate(movingBlocksBase, transform);
+        var note = spawn.GetComponent<Note>();
+        note.gameObject.SetActive(true);
+        note.assignedTime = (float)timeStamps[_spawnIndex];
+        note.SetTiming((float)spawnTimeStamps[_spawnIndex], (float)timeStamps[_spawnIndex], 140);
+        notes.Add(note);
+        
+    }
+
+    private void Shoot()
+    {
+        var newPiece = GameObject.Instantiate(flyingRodBase, transform).GetComponent<Animator>();
+        newPiece.gameObject.SetActive(true);
+        newPiece.Play("Fly", 0, 0);
+        elevatorAnim.Play("MakeRod", 0, 0);
+    }
+
     private void Miss()
     {
         print($"Missed {inputIndex} note");
@@ -110,17 +125,26 @@ public class GameManager : MonoBehaviour
 
     private void SlightMiss()
     {
+        if (!notes[inputIndex].gameObject) return;
         // Shoot
         // Spawn the missed pieces prefab
+        var newPiece = GameObject.Instantiate(missPartsBase, transform).GetComponent<Animator>();
+        newPiece.gameObject.SetActive(true);
+        newPiece.Play("PartsMiss", 0, 0);
         // destroy the note
+        Destroy(notes[inputIndex].gameObject);
         // play the "crumble" sfx
     }
 
     private void Hit()
     {
+        if (!notes[inputIndex].gameObject) return;
         print($"Hit on {inputIndex} note");
         // run the shoot function
         // Spawn a hit piece prefab
+        var newPiece = GameObject.Instantiate(hitPartsBase, transform).GetComponent<Animator>();
+        newPiece.gameObject.SetActive(true);
+        newPiece.Play("PartsHit", 0, 0);
         // play the "hit" sfx
         Destroy(notes[inputIndex].gameObject);
     }
@@ -155,4 +179,6 @@ public class GameManager : MonoBehaviour
         
         if (spawnTimeStamps.Count != timeStamps.Count) Debug.LogWarning("Input events and spawn events don't match. Check your beatmap?");
     }
+    
+   
 }
